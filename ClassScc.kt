@@ -6,9 +6,9 @@ import org.jgrapht.graph.DefaultEdge
 import org.jgrapht.nio.dot.DOTExporter
 
 fun main(args: Array<String>) {
-  val graph = System.`in`.readJdepsPackageGraph()
+  val graph = System.`in`.readJdepsClassGraph()
   val condensed = KosarajuStrongConnectivityInspector(graph).condensation
-  DOTExporter<Graph<JavaPackage, DefaultEdge>, DefaultEdge>().apply {
+  DOTExporter<Graph<JavaClass, DefaultEdge>, DefaultEdge>().apply {
     setVertexAttributeProvider { condensedVertex ->
       listOf(
               "shape" to "box",
