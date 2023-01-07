@@ -40,3 +40,17 @@ kt_jvm_binary(
         "@maven//:com_beust_jcommander",
     ],
 )
+
+kt_jvm_binary(
+    name = "PackageScc",
+    srcs = [
+        "PackageScc.kt",
+    ],
+    main_class = "jvmutil.deps.PackageSccKt",
+    deps = [
+        ":lib",
+        "@maven//:org_jgrapht_jgrapht_core",
+        "@maven//:org_jgrapht_jgrapht_guava",
+        "@maven//:org_jgrapht_jgrapht_io",
+    ],
+)
