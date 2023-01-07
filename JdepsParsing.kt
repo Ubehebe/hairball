@@ -6,7 +6,7 @@ import mu.KotlinLogging
 
 private val splitter = Splitter.on(CharMatcher.whitespace()).omitEmptyStrings()
 
-fun parseJdepsLine(line: String): Pair<Package, Package>? {
+fun parseJdepsLine(line: String): Pair<JavaPackage, JavaPackage>? {
   val parts = splitter.splitToList(line)
   // fully.qualified.From -> fully.qualified.To jar-name.jar
   return when {
@@ -14,7 +14,7 @@ fun parseJdepsLine(line: String): Pair<Package, Package>? {
       log.warn { "malformed line, skipping: $parts" }
       null
     }
-    else -> Package(parts[0]) to Package(parts[2])
+    else -> JavaPackage(parts[0]) to JavaPackage(parts[2])
   }
 }
 

@@ -10,7 +10,7 @@ fun main(args: Array<String>) {
   val flags = Flags()
   JCommander.newBuilder().addObject(flags).build().parse(*args)
 
-  val builder = GraphBuilder.directed().build<Package>()
+  val builder = GraphBuilder.directed().build<JavaPackage>()
   System.`in`.reader().useLines { lines ->
     lines.mapNotNull { parseJdepsLine(it) }.forEach { (from, to) -> builder.putEdge(from, to) }
   }

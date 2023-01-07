@@ -13,12 +13,11 @@ py_binary(
 kt_jvm_binary(
     name = "RecommendJarPartition",
     srcs = [
-        "ClusteredGraph.kt",
-        "DotNode.kt",
+        "DotUtils.kt",
+        "JavaPackage.kt",
         "JdepsParsing.kt",
         "Main.kt",
         "NodeWithIndex.kt",
-        "Package.kt",
         "SklearnDriver.kt",
     ],
     data = [

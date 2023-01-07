@@ -2,9 +2,9 @@ package jvmutil.deps
 
 import com.google.common.base.Splitter
 
-data class Package(val fullyQualified: String) : Comparable<Package>, DotNode {
+data class JavaPackage(val fullyQualified: String) : Comparable<JavaPackage>, DotNode {
 
-  override fun toString(): String = "\"$fullyQualified\""
+  override fun name(): String = fullyQualified
 
   override fun label(): String {
     val parts = Splitter.on('.').splitToList(fullyQualified)
@@ -12,5 +12,5 @@ data class Package(val fullyQualified: String) : Comparable<Package>, DotNode {
         ".${parts.last()}"
   }
 
-  override fun compareTo(other: Package): Int = fullyQualified.compareTo(other.fullyQualified)
+  override fun compareTo(other: JavaPackage): Int = fullyQualified.compareTo(other.fullyQualified)
 }
