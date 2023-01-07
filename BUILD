@@ -1,4 +1,4 @@
-load("@io_bazel_rules_kotlin//kotlin:jvm.bzl", "kt_jvm_binary")
+load("@io_bazel_rules_kotlin//kotlin:jvm.bzl", "kt_jvm_binary", "kt_jvm_library")
 load("@rules_python//python:defs.bzl", "py_binary")
 
 py_binary(
@@ -10,24 +10,33 @@ py_binary(
     ],
 )
 
-kt_jvm_binary(
-    name = "RecommendJarPartition",
+kt_jvm_library(
+    name = "lib",
     srcs = [
         "DotUtils.kt",
         "JavaPackage.kt",
         "JdepsParsing.kt",
-        "Main.kt",
         "NodeWithIndex.kt",
+    ],
+    deps = [
+        "@maven//:com_google_guava_guava",
+        "@maven//:io_github_microutils_kotlin_logging_jvm",
+    ],
+)
+
+kt_jvm_binary(
+    name = "RecommendJarPartition",
+    srcs = [
+        "RecommendJarPartition.kt",
         "SklearnDriver.kt",
     ],
     data = [
         ":spectral_clustering",
     ],
-    main_class = "jvmutil.deps.MainKt",
+    main_class = "jvmutil.deps.RecommendJarPartitionKt",
     deps = [
+        ":lib",
         "//logutil",
         "@maven//:com_beust_jcommander",
-        "@maven//:com_google_guava_guava",
-        "@maven//:io_github_microutils_kotlin_logging_jvm",
     ],
 )
