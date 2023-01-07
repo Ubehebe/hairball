@@ -1,13 +1,11 @@
 package jvmutil.deps
 
-import com.google.common.base.Splitter
+data class JavaPackage(val fullyQualified: String) : Comparable<JavaPackage> {
 
-data class JavaPackage(val fullyQualified: String) : Comparable<JavaPackage>, DotNode {
+  fun name(): String = fullyQualified
 
-  override fun name(): String = fullyQualified
-
-  override fun label(): String {
-    val parts = Splitter.on('.').splitToList(fullyQualified)
+  fun label(): String {
+    val parts = fullyQualified.split('.')
     return parts.subList(0, parts.size - 1).map { it[0] }.joinToString(separator = ".") +
         ".${parts.last()}"
   }
