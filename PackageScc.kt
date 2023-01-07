@@ -1,19 +1,16 @@
 package jvmutil.deps
 
-import com.google.common.graph.EndpointPair
 import org.jgrapht.Graph
 import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
 import org.jgrapht.graph.DefaultEdge
-import org.jgrapht.graph.guava.ImmutableGraphAdapter
 import org.jgrapht.nio.Attribute
 import org.jgrapht.nio.AttributeType
 import org.jgrapht.nio.dot.DOTExporter
 
 fun main(args: Array<String>) {
   val graph = readJdepsGraphFromStdin()
-  val jgraphTGraph = ImmutableGraphAdapter(graph)
-  val condensed = KosarajuStrongConnectivityInspector(jgraphTGraph).condensation
-  DOTExporter<Graph<JavaPackage, EndpointPair<JavaPackage>>, DefaultEdge>().apply {
+  val condensed = KosarajuStrongConnectivityInspector(graph).condensation
+  DOTExporter<Graph<JavaPackage, DefaultEdge>, DefaultEdge>().apply {
     setVertexAttributeProvider { condensedVertex ->
       listOf(
               "shape" to "box",

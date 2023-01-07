@@ -2,16 +2,27 @@ package jvmutil.deps
 
 import com.google.common.base.CharMatcher
 import com.google.common.base.Splitter
-import com.google.common.graph.GraphBuilder
-import com.google.common.graph.ImmutableGraph
 import mu.KotlinLogging
+import org.jgrapht.Graph
+import org.jgrapht.graph.AsUnmodifiableGraph
+import org.jgrapht.graph.DefaultEdge
+import org.jgrapht.graph.builder.GraphTypeBuilder
 
-fun readJdepsGraphFromStdin(): ImmutableGraph<JavaPackage> {
-  val builder = GraphBuilder.directed().build<JavaPackage>()
+fun readJdepsGraphFromStdin(): Graph<JavaPackage, DefaultEdge> {
+  val graph =
+      GraphTypeBuilder.directed<JavaPackage, DefaultEdge>()
+          .edgeClass(DefaultEdge::class.java)
+          .buildGraph()
   System.`in`.reader().useLines { lines ->
-    lines.mapNotNull { parseJdepsLine(it) }.forEach { (from, to) -> builder.putEdge(from, to) }
+    lines
+        .mapNotNull { parseJdepsLine(it) }
+        .forEach { (from, to) ->
+          graph.addVertex(from)
+          graph.addVertex(to)
+          graph.addEdge(from, to)
+        }
   }
-  return ImmutableGraph.copyOf(builder)
+  return AsUnmodifiableGraph(graph)
 }
 
 private val splitter = Splitter.on(CharMatcher.whitespace()).omitEmptyStrings()
