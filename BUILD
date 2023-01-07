@@ -11,14 +11,20 @@ py_binary(
 )
 
 kt_jvm_binary(
-    name = "ParseJdepsOutput",
+    name = "RecommendJarPartition",
     srcs = [
-        "ParseJdepsOutput.kt",
+        "ClusteredGraph.kt",
+        "DotNode.kt",
+        "JdepsParsing.kt",
+        "Main.kt",
+        "NodeWithIndex.kt",
+        "Package.kt",
+        "SklearnDriver.kt",
     ],
     data = [
         ":spectral_clustering",
     ],
-    main_class = "jvmutil.deps.ParseJdepsOutputKt",
+    main_class = "jvmutil.deps.MainKt",
     deps = [
         "//logutil",
         "@maven//:com_beust_jcommander",
