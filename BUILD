@@ -5,7 +5,6 @@ kt_jvm_library(
     srcs = [
         "DotUtils.kt",
         "JavaClass.kt",
-        "JavaPackage.kt",
         "JdepsParsing.kt",
     ],
     deps = [
@@ -22,18 +21,6 @@ kt_jvm_binary(
         "ClassScc.kt",
     ],
     main_class = "jvmutil.deps.ClassSccKt",
-    deps = [
-        ":lib",
-        "@maven//:org_jgrapht_jgrapht_core",
-    ],
-)
-
-kt_jvm_binary(
-    name = "PackageScc",
-    srcs = [
-        "PackageScc.kt",
-    ],
-    main_class = "jvmutil.deps.PackageSccKt",
     deps = [
         ":lib",
         "@maven//:org_jgrapht_jgrapht_core",
