@@ -18,6 +18,7 @@ kt_jvm_binary(
         "JavaClass.kt",
         "JdepsParsing.kt",
         "Main.kt",
+        "ProgramMode.kt",
         "SpectralClustering.kt",
     ],
     data = [
