@@ -36,11 +36,12 @@ private fun String.parseJdepsClassLine(): Pair<JavaClass, JavaClass>? {
       null
     }
     else -> {
-      val classes = listOf(JavaClass(parts[0]), JavaClass(parts[2]))
-      if (classes.any { it.isInnerClass() || it.isSyntheticKotlinClass() }) {
-        null
+      val from = JavaClass.parse(parts[0])
+      val to = JavaClass.parse(parts[2])
+      if (from != to) {
+        from to to
       } else {
-        classes[0] to classes[1]
+        null
       }
     }
   }
