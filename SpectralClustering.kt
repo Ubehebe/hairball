@@ -17,7 +17,7 @@ import org.jgrapht.graph.builder.GraphTypeBuilder
  * (TODO: characterize performance).
  *
  * TODO: try to use a jvm implementation like
- * https://haifengl.github.io/clustering.html#spectral-clustering.
+ *   https://haifengl.github.io/clustering.html#spectral-clustering.
  */
 class SpectralClustering<V>(
     private val graph: Graph<V, DefaultEdge>,
