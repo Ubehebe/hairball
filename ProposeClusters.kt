@@ -7,20 +7,6 @@ import org.jgrapht.nio.Attribute
 import org.jgrapht.nio.AttributeType
 import org.jgrapht.nio.dot.DOTExporter
 
-sealed interface ProgramMode {
-  fun run(graph: Graph<JavaClass, DefaultEdge>)
-}
-
-object CountSccs : ProgramMode {
-  override fun run(graph: Graph<JavaClass, DefaultEdge>) {
-    // condense the graph into its strongly connected components. each scc in the original graph
-    // becomes a single vertex in the new graph.
-    val sccs: Graph<Set<JavaClass>, DefaultEdge> =
-        KosarajuStrongConnectivityInspector(graph).condense()
-    println("${sccs.vertexSet().size} strongly connected components")
-  }
-}
-
 class ProposeClusters(private val numClusters: Int) : ProgramMode {
 
   init {
@@ -57,7 +43,7 @@ class ProposeClusters(private val numClusters: Int) : ProgramMode {
   }
 }
 
-private fun Pair<String, String>.asDotAttr(): Pair<String, Attribute> =
+fun Pair<String, String>.asDotAttr(): Pair<String, Attribute> =
     first to
         object : Attribute {
           override fun getType(): AttributeType = AttributeType.STRING

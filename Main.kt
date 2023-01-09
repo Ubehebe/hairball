@@ -21,7 +21,14 @@ class Flags {
       when (programMode) {
         "ProposeClusters" -> numClusters?.let { ProposeClusters(it) }
                 ?: error("-n is required for --mode ProposeClusters")
-        "CountSccs" -> CountSccs
+        "MinimalClusters" -> {
+          check(numClusters == null) { "-n must not be set for --mode MinimalClusters" }
+          MinimalClusters
+        }
         else -> error("unknown mode: $programMode")
       }
+}
+
+sealed interface ProgramMode {
+  fun run(graph: Graph<JavaClass, DefaultEdge>)
 }
