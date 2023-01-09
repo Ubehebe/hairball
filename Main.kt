@@ -15,11 +15,12 @@ fun main(args: Array<String>) {
 class Flags {
   @Parameter(names = ["--mode"]) private var programMode = "ProposeClusters"
 
-  @Parameter(names = ["-n"]) private var numClusters = -1
+  @Parameter(names = ["-n"]) private var numClusters: Int? = null
 
   fun mode(): ProgramMode =
       when (programMode) {
-        "ProposeClusters" -> ProposeClusters(numClusters)
+        "ProposeClusters" -> numClusters?.let { ProposeClusters(it) }
+                ?: error("-n is required for --mode ProposeClusters")
         "CountSccs" -> CountSccs
         else -> error("unknown mode: $programMode")
       }
