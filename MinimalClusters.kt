@@ -14,8 +14,13 @@ object MinimalClusters : ProgramMode {
     val sccs: Graph<Set<JavaClass>, DefaultEdge> =
         KosarajuStrongConnectivityInspector(graph).condense()
 
+    val biggestCluster = sccs.vertexSet().maxBy { it.size }
     log.info {
-      "condensed ${graph.vertexSet().size} vertices into ${sccs.vertexSet().size} strongly connected components"
+      """condensed ${graph.vertexSet().size} classes into ${sccs.vertexSet().size} strongly
+connected components. the largest component contains ${biggestCluster.size} classes that all depend
+on one another. you will have to break these dependencies manually."""
+          .split("\n")
+          .joinToString(" ")
     }
 
     DOTExporter<Set<JavaClass>, DefaultEdge>().apply {
