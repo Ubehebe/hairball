@@ -1,5 +1,23 @@
 load("@io_bazel_rules_kotlin//kotlin:jvm.bzl", "kt_jvm_binary")
 load("@rules_python//python:defs.bzl", "py_binary")
+load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "define_kt_toolchain")
+load("@rules_python//python:pip.bzl", "compile_pip_requirements")
+
+compile_pip_requirements(
+    name = "requirements",
+    timeout = "moderate",
+    requirements_in = "requirements.in",
+    requirements_txt = "requirements.txt",
+)
+
+define_kt_toolchain(
+    name = "kotlin_toolchain",
+    api_version = "1.7",
+    experimental_report_unused_deps = "warn",
+    experimental_strict_kotlin_deps = "warn",
+    jvm_target = "17",
+    language_version = "1.7",
+)
 
 py_binary(
     name = "spectral_clustering",
@@ -27,9 +45,6 @@ kt_jvm_binary(
         ":spectral_clustering",
     ],
     main_class = "jvmutil.deps.MainKt",
-    runtime_deps = [
-        "//logutil",
-    ],
     deps = [
         "@maven//:com_beust_jcommander",
         "@maven//:com_google_guava_guava",
