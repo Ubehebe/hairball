@@ -37,7 +37,7 @@ making it impossible to extract a small subset of sources.
 
 hairball automates some of this process. When pointed at a jar file, it computes a way to cluster
 the classes in the jar into `--n-clusters` clusters, such that there are no circular dependencies
-between clusters. The output is a `.dot` file describing a graph structure. You can use
+between clusters. The output is a `.dot` file describing a graph structure. You can then use
 [graphviz](https://graphviz.org) to visualize the graph (e.g. `dot -Tsvg -o app.svg app.dot`).
 
 ## Installation
@@ -56,7 +56,7 @@ python) needed to run hairball, without touching any local versions of these too
 can run the binary:
 
 ```
-$ < path/to/jdeps.txt bazel run hairball -- ProposeClusters -- --n-clusters 100 > app.dot
+$ < path/to/jdeps.txt bazel run hairball -- ProposeClusters --n-clusters 100 > app.dot
 ```
 
 ## Implementation
