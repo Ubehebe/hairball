@@ -1,4 +1,4 @@
-package jvmutil.deps
+package hairball
 
 /**
  * Possible values of the assign_labels argument to scikit-learn's spectral_clustering method. See

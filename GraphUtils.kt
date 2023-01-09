@@ -1,4 +1,4 @@
-package jvmutil.deps
+package hairball
 
 import org.jgrapht.Graph
 import org.jgrapht.alg.interfaces.ClusteringAlgorithm

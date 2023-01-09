@@ -1,4 +1,4 @@
-package jvmutil.deps
+package hairball
 
 import com.google.common.collect.HashMultimap
 import org.jgrapht.Graph
@@ -24,7 +24,7 @@ class SklearnSpectralClustering<V>(
 
     val pb =
         ProcessBuilder(
-            "jvmutil/deps/spectral_clustering",
+            "./spectral_clustering",
             "--n_clusters=$nClusters",
             "--assign_labels=$assignLabels")
     val clusterNames: List<String> =

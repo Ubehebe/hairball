@@ -1,4 +1,4 @@
-package jvmutil.deps
+package hairball
 
 data class JavaClass private constructor(val fullyQualified: String) {
   fun label(): String {

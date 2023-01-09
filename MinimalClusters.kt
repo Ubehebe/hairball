@@ -1,4 +1,4 @@
-package jvmutil.deps
+package hairball
 
 import com.beust.jcommander.Parameters
 import org.jgrapht.Graph

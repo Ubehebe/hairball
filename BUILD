@@ -29,7 +29,7 @@ py_binary(
 )
 
 kt_jvm_binary(
-    name = "DetangleHairball",
+    name = "hairball",
     srcs = [
         "AssignLabels.kt",
         "ClusteringImpl.kt",
@@ -44,7 +44,7 @@ kt_jvm_binary(
     data = [
         ":spectral_clustering",
     ],
-    main_class = "jvmutil.deps.MainKt",
+    main_class = "hairball.MainKt",
     deps = [
         "@maven//:com_beust_jcommander",
         "@maven//:com_google_guava_guava",
