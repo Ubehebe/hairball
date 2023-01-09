@@ -7,7 +7,10 @@ import org.jgrapht.nio.Attribute
 import org.jgrapht.nio.AttributeType
 import org.jgrapht.nio.dot.DOTExporter
 
-class ProposeClusters(private val numClusters: Int) : ProgramMode {
+class ProposeClusters(
+    private val numClusters: Int,
+    private val assignLabels: AssignLabels,
+) : ProgramMode {
 
   init {
     check(numClusters > 1) { "invalid num clusters: $numClusters" }
@@ -23,16 +26,19 @@ class ProposeClusters(private val numClusters: Int) : ProgramMode {
       "requested $numClusters clusters, but there are only ${sccs.vertexSet().size} strongly connected components."
     }
 
-    // cluster the sccs into the given number of clusters.
+    // cluster the sccs into the given number of clusters, shelling out to scikit-learn.
+    // TODO: ideally, we could perform the clustering purely on the jvm. jgrapht ships with three
+    // ClusteringAlgorithm impls, but only org.jgrapht.alg.clustering.GirvanNewmanClustering works
+    // with directed graphs, and it's unacceptably slow.
+    // https://haifengl.github.io/clustering.html#spectral-clustering is a java impl of spectral
+    // clustering, but it gives qualitatively worse results than scikit-learn, for example lots of
+    // singleton clusters and one huge residual cluster.
     val clustered: Graph<Set<Set<JavaClass>>, DefaultEdge> =
-        sccs.condense(SpectralClustering(sccs, numClusters).clustering)
+        sccs.condense(SklearnSpectralClustering(graph = sccs, numClusters, assignLabels).clustering)
 
-    // the clustering could have produced new mutual imports, which is not helpful. condense the
-    // graph
-    // into strongly connected components again to get rid of them.
+    // the clustering could have produced new circular deps, which is not helpful. re-condense the
+    // graph into strongly connected components again to get rid of them.
     // TODO: get the generic types under control
-    // TODO: i need better intuition about how a graph partition can change strongly connected
-    // components. (ideally, we could partition while preserving the sccs.)
     val reCondensed: Graph<Set<Set<Set<JavaClass>>>, DefaultEdge> =
         KosarajuStrongConnectivityInspector(clustered).condense()
 

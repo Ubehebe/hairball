@@ -10,24 +10,23 @@ import org.jgrapht.graph.builder.GraphTypeBuilder
 /**
  * [ClusteringAlgorithm] implementation that delegates to scikit-learn's spectral_clustering method
  * (https://scikit-learn.org/stable/modules/generated/sklearn.cluster.spectral_clustering.html).
- *
- * jgrapht ships with three ClusteringAlgorithm impls, but only
- * [org.jgrapht.alg.clustering.GirvanNewmanClustering] works with directed graphs. It takes
- * ~quadratic time, which is infeasible for large graphs. Spectral clustering seems to be faster
- * (TODO: characterize performance).
- *
- * TODO: try to use a jvm implementation like
- *   https://haifengl.github.io/clustering.html#spectral-clustering.
  */
-class SpectralClustering<V>(
+class SklearnSpectralClustering<V>(
     private val graph: Graph<V, DefaultEdge>,
-    private val numClusters: Int
+    private val nClusters: Int,
+    private val assignLabels: AssignLabels,
 ) : ClusteringAlgorithm<V> {
   override fun getClustering(): ClusteringAlgorithm.Clustering<V> {
 
+    // The input to spectral clustering is an adjacency matrix of the graph. To build the adjacency
+    // matrix, we need to order the vertices.
     val indexed: Graph<IndexedVertex<V>, DefaultEdge> = graph.indexed()
 
-    val pb = ProcessBuilder("jvmutil/deps/spectral_clustering", "--n_clusters=$numClusters")
+    val pb =
+        ProcessBuilder(
+            "jvmutil/deps/spectral_clustering",
+            "--n_clusters=$nClusters",
+            "--assign_labels=$assignLabels")
     val clusterNames: List<String> =
         pb.start().let {
           it.outputStream.write(indexed.toAdjacencyMatrix().toByteArray())
@@ -36,12 +35,18 @@ class SpectralClustering<V>(
           check(status == 0) {
             "spectral_clustering exited with status $status: ${String(it.errorStream.readAllBytes())}"
           }
+          // spectral_clustering.py outputs the cluster labels, one per line. The first line is the
+          // cluster of vertex 0, etc.
           it.inputStream.reader().readLines()
         }
     return ClusteringImpl(indexed.clustered(clusterNames).vertexSet())
   }
 }
 
+/**
+ * Format the graph as an adjacency matrix, one row per line. spectral_clustering.py parses this via
+ * numpy's loadtxt method.
+ */
 private fun <T> Graph<IndexedVertex<T>, DefaultEdge>.toAdjacencyMatrix(): String {
   val s = StringBuilder()
   for (u in vertexSet()) {
@@ -53,6 +58,11 @@ private fun <T> Graph<IndexedVertex<T>, DefaultEdge>.toAdjacencyMatrix(): String
   return s.toString()
 }
 
+/**
+ * Condenses the graph according to the given clusters.
+ *
+ * @param clusterNames list of cluster names. The first element is the cluster of vertex 0, etc.
+ */
 private inline fun <V, reified E> Graph<IndexedVertex<V>, E>.clustered(
     clusterNames: List<String>
 ): Graph<Cluster<V>, E> {
@@ -90,6 +100,10 @@ private inline fun <V, reified E> Graph<IndexedVertex<V>, E>.clustered(
   return AsUnmodifiableGraph(g)
 }
 
+/**
+ * Returns a graph with the same structure as this one, with the vertices assigned (arbitrary)
+ * indices.
+ */
 private inline fun <V, reified E> Graph<V, E>.indexed(): Graph<IndexedVertex<V>, E> {
   val verticesToIndexes: Map<V, IndexedVertex<V>> =
       vertexSet().mapIndexed { i, v -> v to IndexedVertex(v, i) }.toMap()

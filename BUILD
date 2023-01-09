@@ -13,6 +13,7 @@ py_binary(
 kt_jvm_binary(
     name = "DetangleHairball",
     srcs = [
+        "AssignLabels.kt",
         "ClusteringImpl.kt",
         "GraphUtils.kt",
         "JavaClass.kt",
@@ -20,7 +21,7 @@ kt_jvm_binary(
         "Main.kt",
         "MinimalClusters.kt",
         "ProposeClusters.kt",
-        "SpectralClustering.kt",
+        "SklearnSpectralClustering.kt",
     ],
     data = [
         ":spectral_clustering",

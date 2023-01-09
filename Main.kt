@@ -15,16 +15,15 @@ fun main(args: Array<String>) {
 class Flags {
   @Parameter(names = ["--mode"]) private var programMode = "ProposeClusters"
 
-  @Parameter(names = ["-n"]) private var numClusters: Int? = null
+  @Parameter(names = ["--n-clusters"]) private var nClusters: Int? = null
+
+  @Parameter(names = ["--assign-labels"]) private var assignLabels = AssignLabels.kmeans
 
   fun mode(): ProgramMode =
       when (programMode) {
-        "ProposeClusters" -> numClusters?.let { ProposeClusters(it) }
-                ?: error("-n is required for --mode ProposeClusters")
-        "MinimalClusters" -> {
-          check(numClusters == null) { "-n must not be set for --mode MinimalClusters" }
-          MinimalClusters
-        }
+        "ProposeClusters" -> nClusters?.let { ProposeClusters(it, assignLabels) }
+                ?: error("--n-clusters is required for --mode ProposeClusters")
+        "MinimalClusters" -> MinimalClusters
         else -> error("unknown mode: $programMode")
       }
 }
