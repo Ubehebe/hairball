@@ -1,6 +1,8 @@
 package hairball
 
 import com.beust.jcommander.Parameters
+import hairball.Command
+import hairball.dotAttrs
 import org.jgrapht.Graph
 import org.jgrapht.graph.DefaultEdge
 import org.jgrapht.nio.Attribute
@@ -22,5 +24,5 @@ object MinimalClusters : Command {
 }
 
 private fun Set<JavaClass>.dotAttrs(): Map<String, Attribute> =
-    listOf("shape" to "box", "label" to map { it.label() }.sorted().joinToString(separator = "\\n"))
-        .associate { it.asDotAttr() }
+        listOf("shape" to "box", "label" to map { it.label() }.sorted().joinToString(separator = "\\n"))
+                .associate { it.asDotAttr() }

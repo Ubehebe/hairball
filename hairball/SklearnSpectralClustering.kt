@@ -24,7 +24,7 @@ class SklearnSpectralClustering<V>(
 
     val pb =
         ProcessBuilder(
-            "./spectral_clustering",
+            "hairball/spectral_clustering",
             "--n_clusters=$nClusters",
             "--assign_labels=$assignLabels")
     val clusterNames: List<String> =
