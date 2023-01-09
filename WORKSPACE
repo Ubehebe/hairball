@@ -27,6 +27,7 @@ maven_install(
     artifacts = [
         "com.beust:jcommander:1.72",
         "com.google.guava:guava:31.1-jre",
+        "org.slf4j:slf4j-simple:2.0.6",
         "io.github.microutils:kotlin-logging-jvm:2.1.20",
         "org.jgrapht:jgrapht-core:" + _JGRAPHT_VERSION,
         "org.jgrapht:jgrapht-io:" + _JGRAPHT_VERSION,
@@ -37,7 +38,6 @@ maven_install(
     maven_install_json = "//:maven_install.json",
     repositories = [
         "https://repo1.maven.org/maven2",
-        "https://maven.google.com",
     ],
     # don't allow deps into the interior of the maven graph.
     strict_visibility = True,

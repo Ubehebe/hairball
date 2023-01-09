@@ -45,6 +45,9 @@ kt_jvm_binary(
         ":spectral_clustering",
     ],
     main_class = "hairball.MainKt",
+    runtime_deps = [
+        "@maven//:org_slf4j_slf4j_simple",
+    ],
     deps = [
         "@maven//:com_beust_jcommander",
         "@maven//:com_google_guava_guava",
