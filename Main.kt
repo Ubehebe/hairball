@@ -2,32 +2,61 @@ package jvmutil.deps
 
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
+import kotlin.system.exitProcess
+import mu.KotlinLogging
 import org.jgrapht.Graph
+import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector
 import org.jgrapht.graph.DefaultEdge
 
 fun main(args: Array<String>) {
-  val flags = Flags()
-  JCommander.newBuilder().addObject(flags).build().parse(*args)
+  val command = args.parse()
+
+  // read the class dependency graph from stdin.
   val graph: Graph<JavaClass, DefaultEdge> = System.`in`.readJdepsClassGraph()
-  flags.mode().run(graph)
+
+  // condense the graph into its strongly connected components. each scc in the original graph
+  // becomes a single vertex in the new graph.
+  val sccs: Graph<Set<JavaClass>, DefaultEdge> =
+      KosarajuStrongConnectivityInspector(graph).condense()
+
+  val biggestCluster = sccs.vertexSet().maxBy { it.size }
+  log.info {
+    """condensed ${graph.vertexSet().size} classes into ${sccs.vertexSet().size} strongly
+connected components. the largest component contains ${biggestCluster.size} classes that all depend
+on one another. you will have to break these dependencies manually."""
+        .split("\n")
+        .joinToString(" ")
+  }
+
+  // run the program on the condensed graph.
+  command.run(sccs)
 }
 
-class Flags {
-  @Parameter(names = ["--mode"]) private var programMode = "ProposeClusters"
-
-  @Parameter(names = ["--n-clusters"]) private var nClusters: Int? = null
-
-  @Parameter(names = ["--assign-labels"]) private var assignLabels = AssignLabels.kmeans
-
-  fun mode(): ProgramMode =
-      when (programMode) {
-        "ProposeClusters" -> nClusters?.let { ProposeClusters(it, assignLabels) }
-                ?: error("--n-clusters is required for --mode ProposeClusters")
-        "MinimalClusters" -> MinimalClusters
-        else -> error("unknown mode: $programMode")
-      }
+private fun Array<String>.parse(): Command {
+  val jc =
+      JCommander.newBuilder()
+          .programName("hairball")
+          .addCommand(ProposeClusters)
+          .addCommand(MinimalClusters)
+          .addObject(TopLevelFlags)
+          .build()
+  jc.parse(*this)
+  return when (jc.parsedCommand) {
+    "ProposeClusters" -> ProposeClusters
+    "MinimalClusters" -> MinimalClusters
+    else -> {
+      jc.usage()
+      exitProcess(0)
+    }
+  }
 }
 
-sealed interface ProgramMode {
-  fun run(graph: Graph<JavaClass, DefaultEdge>)
+private object TopLevelFlags {
+  @Parameter(names = ["-h", "--help"]) var help = false
 }
+
+sealed interface Command {
+  fun run(stronglyConnectedComponents: Graph<Set<JavaClass>, DefaultEdge>)
+}
+
+private val log = KotlinLogging.logger {}
