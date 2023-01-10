@@ -102,8 +102,8 @@ sources that all import each other. hairball will warn about them, like so:
 
 ```
 [main] INFO hairball.Main - condensed 298 classes into 245 strongly connected components. the
-largest component contains 48 classes that all depend on one another. you will have to break these
-dependencies manually.
+largest component contains 48 classes that transitively depend on one another. you will have to
+break these dependencies manually.
 ```
 
 Circular dependencies are the fundamental reason why shrinking a compilation unit is hard. hairball
