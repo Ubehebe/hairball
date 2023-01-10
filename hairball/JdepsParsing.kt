@@ -38,7 +38,7 @@ private fun String.parseJdepsClassLine(): Pair<JavaClass, JavaClass>? {
     else -> {
       val from = JavaClass.parse(parts[0])
       val to = JavaClass.parse(parts[2])
-      if (from != to) {
+      if (from != null && to != null && from != to) {
         from to to
       } else {
         null
