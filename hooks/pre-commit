@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# (ln -s this file to .git/hooks/pre-commit.)
+
+set -e
+
+bazel test ...
+
