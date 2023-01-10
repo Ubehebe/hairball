@@ -1,7 +1,9 @@
 # hairball
 
+Semi-automated decomposition of large compilation units (jars only for now).
+
 ```
-Usage: < path/to/jdeps.txt hairball [options] [command] [command options]
+Usage: jdeps -v path/to/app.jar | hairball [options] [command] [command options]
   Options:
     -h, --help
 
@@ -38,7 +40,11 @@ making it impossible to extract a small subset of sources.
 hairball automates some of this process. When pointed at a jar file, it computes a way to cluster
 the classes in the jar into `--n-clusters` clusters, such that there are no circular dependencies
 between clusters. The output is a `.dot` file describing a graph structure. You can then use
-[graphviz](https://graphviz.org) to visualize the graph (e.g. `dot -Tsvg -o app.svg app.dot`).
+[graphviz](https://graphviz.org) (not included) to visualize the graph (e.g.
+`dot -Tsvg -o app.svg app.dot`).
+
+The [examples](examples) directory contains SVGs of hairball runs on a few prominent open-source
+projects.
 
 ## Installation
 
@@ -51,13 +57,27 @@ $ cd hairball
 $ bazel build hairball
 ```
 
-This will automatically download and configure all the toolchains and dependencies (java, kotlin,
-python) needed to run hairball, without touching any local versions of these toolchains. Then you
-can run the binary:
+This will automatically download and configure the toolchains and dependencies (java, kotlin,
+python) needed to run hairball, without disturbing versions that may already be installed on your
+system.
+
+## Invocation
+
+hairball doesn't inspect jars directly. Instead, it expects to read the output of
+[jdeps](https://docs.oracle.com/en/java/javase/11/tools/jdeps.html) -v on standard input. jdeps has
+many options to restrict the scope of analysis, so you can invoke jdeps how you like and pipe it to
+hairball. For example:
 
 ```
-$ < path/to/jdeps.txt bazel run hairball -- ProposeClusters --n-clusters 100 > app.dot
+$ jdeps -v --regex 'some\.package\.path.*' path/to/app.jar | \
+    bazel run hairball -- ProposeClusters --n-clusters 100 \
+    > app.dot
 ```
+
+For meaningful results, the input jar should represent a single compilation unit (gradle module,
+bazel target, etc.). jars that include their transitive dependencies (shadow jars, shaded jars,
+deploy jars) already represent a graph of compilation units; analyzing them as though they represent
+a single compilation unit is pointless.
 
 ## Implementation
 
@@ -95,6 +115,6 @@ that structure. (hairball has no access to your source code.) For the time being
 manually translate hairball's output into edits to your `build.gradle.kts` files or however you
 structure your dependency graph.
 
-hairball only works on jar files at the moment, though its underlying algorithms should work for
+hairball only works on the output of `jdeps -v` at the moment, though its underlying algorithms should work for
 any kind of dependency structure. Feel free to send a pull request to teach hairball about other
 languages or build systems.
