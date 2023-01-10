@@ -11,8 +11,6 @@ compile_pip_requirements(
 define_kt_toolchain(
     name = "kotlin_toolchain",
     api_version = "1.7",
-    experimental_report_unused_deps = "warn",
-    experimental_strict_kotlin_deps = "warn",
     jvm_target = "17",
     language_version = "1.7",
 )
