@@ -23,6 +23,7 @@ object ProposeClusters : Command {
           "target number of clusters to create. the actual number of clusters may be smaller; see README.md for discussion.",
       required = true,
   )
+  @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN") // using java.lang.Integer purposely for nullability
   private lateinit var nClusters: Integer
 
   @Parameter(
