@@ -1,9 +1,6 @@
 package hairball
 
 import com.beust.jcommander.Parameters
-import hairball.Command
-import hairball.dotAttrs
-import org.jgrapht.Graph
 import org.jgrapht.graph.DefaultEdge
 import org.jgrapht.nio.Attribute
 import org.jgrapht.nio.dot.DOTExporter
@@ -15,14 +12,14 @@ import org.jgrapht.nio.dot.DOTExporter
     separators = "= ",
 )
 object MinimalClusters : Command {
-  override fun run(stronglyConnectedComponents: Graph<Set<JavaClass>, DefaultEdge>) {
+  override fun run(graphs: DependencyGraphs) {
     DOTExporter<Set<JavaClass>, DefaultEdge>().apply {
       setVertexAttributeProvider { it.dotAttrs() }
-      exportGraph(stronglyConnectedComponents, System.out)
+      exportGraph(graphs.simplifiedComponents, System.out)
     }
   }
 }
 
 private fun Set<JavaClass>.dotAttrs(): Map<String, Attribute> =
-        listOf("shape" to "box", "label" to map { it.label() }.sorted().joinToString(separator = "\\n"))
-                .associate { it.asDotAttr() }
+    listOf("shape" to "box", "label" to map { it.label() }.sorted().joinToString(separator = "\\n"))
+        .associate { it.asDotAttr() }

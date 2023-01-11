@@ -15,6 +15,7 @@ kt_jvm_binary(
     srcs = [
         "AssignLabels.kt",
         "ClusteringImpl.kt",
+        "DependencyGraphs.kt",
         "GraphUtils.kt",
         "JavaClass.kt",
         "JdepsParsing.kt",

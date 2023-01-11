@@ -36,14 +36,13 @@ inline fun <V, reified E> Graph<V, E>.condense(
  * This method wraps that to return a graph with vertices of type Set<V>, which I find more
  * intuitive.
  */
-inline fun <V, reified E> StrongConnectivityAlgorithm<V, E>.condense(): Graph<Set<V>, E> {
-  val condensation = this.condensation // don't call getCondensation multiple times (kotlin footgun)
+inline fun <V, reified E> Graph<Graph<V, E>, E>.simplified(): Graph<Set<V>, E> {
   val g = GraphTypeBuilder.directed<Set<V>, E>().edgeClass(E::class.java).buildGraph()
 
-  condensation.vertexSet().map { it.vertexSet().toSet() }.forEach { g.addVertex(it) }
-  condensation.edgeSet().forEach {
-    val u = condensation.getEdgeSource(it).vertexSet().toSet()
-    val v = condensation.getEdgeTarget(it).vertexSet().toSet()
+  vertexSet().map { it.vertexSet().toSet() }.forEach { g.addVertex(it) }
+  edgeSet().forEach {
+    val u = getEdgeSource(it).vertexSet().toSet()
+    val v = getEdgeTarget(it).vertexSet().toSet()
     if (u != v) {
       g.addEdge(u, v)
     }

@@ -32,11 +32,12 @@ object ProposeClusters : Command {
           """pass custom assign_labels arg to sklearn.spectral_clustering. See https://scikit-learn.org/stable/modules/generated/sklearn.cluster.spectral_clustering.html.""")
   private var assignLabels = AssignLabels.kmeans
 
-  override fun run(stronglyConnectedComponents: Graph<Set<JavaClass>, DefaultEdge>) {
+  override fun run(graphs: DependencyGraphs) {
+    val components = graphs.simplifiedComponents
     val targetClusters = nClusters.toInt()
     check(targetClusters > 1) { "got --n-clusters $nClusters, need > 1" }
-    check(targetClusters <= stronglyConnectedComponents.vertexSet().size) {
-      "requested $targetClusters clusters, but there are only ${stronglyConnectedComponents.vertexSet().size} strongly connected components."
+    check(targetClusters <= components.vertexSet().size) {
+      "requested $targetClusters clusters, but there are only ${components.vertexSet().size} strongly connected components."
     }
 
     // cluster the sccs into the given number of clusters, shelling out to scikit-learn.
@@ -47,15 +48,14 @@ object ProposeClusters : Command {
     // clustering, but it gives qualitatively worse results than scikit-learn, for example lots of
     // singleton clusters and one huge residual cluster.
     val clustered: Graph<Set<Set<JavaClass>>, DefaultEdge> =
-        stronglyConnectedComponents.condense(
-            SklearnSpectralClustering(stronglyConnectedComponents, targetClusters, assignLabels)
-                .clustering)
+        components.condense(
+            SklearnSpectralClustering(components, targetClusters, assignLabels).clustering)
 
     // the clustering could have produced new circular deps, which is not helpful. re-condense the
     // graph into strongly connected components again to get rid of them.
     // TODO: get the generic types under control
     val reCondensed: Graph<Set<Set<Set<JavaClass>>>, DefaultEdge> =
-        KosarajuStrongConnectivityInspector(clustered).condense()
+        KosarajuStrongConnectivityInspector(clustered).condensation.simplified()
 
     val actualClusters = reCondensed.vertexSet().size
     if (actualClusters < targetClusters) {
